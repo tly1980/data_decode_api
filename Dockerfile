@@ -1,5 +1,9 @@
-FROM python:3.7-alpine
+FROM python:3.6-alpine3.7
 COPY . /app
 WORKDIR /app
-RUN pip install -r requirements.txt
-CMD ["gunicorn", "-w 4", "app:app"]
+RUN apk add --no-cache --virtual .build-deps \
+  gcc \
+  musl-dev \
+  && pip install -r requirements.txt \
+  && apk del .build-deps
+CMD ["gunicorn", "-w 4", "app:app", "-b :80"]
